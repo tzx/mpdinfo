@@ -18,8 +18,7 @@ type Info struct {
 }
 
 func GetMPDInfo() (Info, error) {
-  // TODO: localhost 6600 variable
-  conn, err := textproto.Dial("tcp", "localhost:6600")
+  conn, err := textproto.Dial("tcp", config.MPDTCPURL)
   if err != nil {
     var res Info
     return res, err

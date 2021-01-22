@@ -8,18 +8,26 @@ import (
 	"os"
 )
 
-type TemplateInfo struct {
-  MPDURL string
-  ServerURL string
+type Config struct {
+  MPDHTTPURL  string
+  MPDTCPURL   string
+  ServerPort  string
 }
 
-var URLs TemplateInfo
+type TemplateInfo struct {
+  MPDHTTPURL  string
+  StatusURL   string
+}
+
+var config Config
+const statusEndpoint = "/status"
 
 func getMPDInfo(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
 
   info, err := GetMPDInfo()
   if err != nil {
+    log.Println(err)
     w.WriteHeader(http.StatusServiceUnavailable)
     res, _ := json.Marshal("MPD is not on or having issues!")
     w.Write(res)
@@ -33,19 +41,29 @@ func index(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     log.Fatal("Template Error:", err)
   }
-  t.Execute(w, URLs)
+
+  templating := TemplateInfo {
+    MPDHTTPURL: config.MPDHTTPURL,
+    StatusURL: "http://localhost:" + config.ServerPort + statusEndpoint,
+  }
+  t.Execute(w, templating)
 }
 
 func main() {
-  http.HandleFunc("/status", getMPDInfo)
+  http.HandleFunc(statusEndpoint, getMPDInfo)
   http.HandleFunc("/", index)
-  http.ListenAndServe(":8080", nil)
+  http.ListenAndServe(":" + config.ServerPort, nil)
 }
 
 func init() {
-  argsWithoutProg := os.Args[1:]
-  if len(argsWithoutProg) != 2 {
-    log.Fatal("Usage: mpdinfo mpdURL serverURL")
+  file, err := os.Open("config.json")
+  if err != nil {
+    log.Fatal(err)
   }
-  URLs = TemplateInfo{MPDURL: argsWithoutProg[0], ServerURL: argsWithoutProg[1]}
+  decoder := json.NewDecoder(file)
+  err = decoder.Decode(&config)
+  if err != nil {
+    log.Fatal(err)
+  }
+  log.Println(config)
 }
