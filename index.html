@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Thicc</title>
+</head>
+
+<body>
+  <div>
+    <span id="artist">Loading... -</span>
+    <span id="title">Loading...</span>
+  </div>
+  <div>
+    <span id="album">Loading...</span>
+  </div>
+
+  <!-- TODO: localhost -->
+  <video autoplay controls="" src="http://localhost:8000" style="height:40px; width:20%;"></video>
+  <div>
+    <span id="elapsed">Loading...</span>
+    <span>/</span>
+    <span id="duration">Loading...</span>
+  </div>
+  <script>
+    function update(data) {
+      let artist = document.getElementById('artist');
+      let title = document.getElementById('title');
+      let album = document.getElementById('album');
+      artist.innerHTML = data.artist + ' — ' ;
+      title.innerHTML = data.title;
+      if (data.album) {
+        album.innerHTML = 'Album: ' + data.album;
+      } else {
+        album.innerHTML = '';
+      }
+
+      let elapsed = document.getElementById('elapsed');
+      let duration = document.getElementById('duration');
+      elapsed.innerHTML = data.elapsed;
+      duration.innerHTML = data.duration;
+    }
+
+    function req() {
+      <!-- TODO: localhost -->
+      fetch('http://localhost:8080')
+        .then(response => response.json())
+        .then(data => update(data));
+    }
+    setInterval(req, 1000);
+  </script>
+</body>
+</html>
