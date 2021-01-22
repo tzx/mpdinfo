@@ -16,7 +16,7 @@
   </div>
 
   <!-- TODO: localhost -->
-  <video autoplay controls="" src="http://localhost:8000" style="height:40px; width:20%;"></video>
+  <video autoplay controls="" src="{{.MPDURL}}" style="height:40px; width:20%;"></video>
   <div>
     <span id="elapsed">Loading...</span>
     <span>/</span>
@@ -43,7 +43,7 @@
 
     function req() {
       <!-- TODO: localhost -->
-      fetch('http://localhost:8080')
+      fetch('{{.ServerURL}}')
         .then(response => response.json())
         .then(data => update(data));
     }
