@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"net/textproto"
@@ -12,8 +13,8 @@ type Info struct {
   Artist    string    `json:"artist"`
   Title     string    `json:"title"`
   Album     string    `json:"album"`
-  Elapsed   float64   `json:"elapsed"`
-  Duration  float64   `json:"duration"`
+  Elapsed   string    `json:"elapsed"`
+  Duration  string    `json:"duration"`
   State     string    `json:"state"`
 }
 
@@ -53,18 +54,24 @@ func sendInfoCmd(c *textproto.Conn, s string) Info {
   if err != nil {
     log.Fatal("Uhhh mpd didn't give a number?", err)
   }
-  elapsed = math.Round(elapsed)
-  duration = math.Round(duration)
 
   forJSON := Info {
     Artist: info["Artist"],
     Title: info["Title"],
     Album: info["Album"],
     State:  info["state"],
-    Elapsed: elapsed,
-    Duration: duration,
+    Elapsed: secondsToMinutes(elapsed),
+    Duration: secondsToMinutes(duration),
   }
   return forJSON
+}
+
+func secondsToMinutes(toConvert float64) string {
+  rounded :=  uint(math.Round(toConvert))
+  minutes := rounded / 60
+  seconds := rounded % 60
+  res := fmt.Sprintf("%d:%02d", minutes, seconds)
+  return res
 }
 
 func read(c *textproto.Conn, end string) map[string]string {
