@@ -15,7 +15,6 @@
     <span id="album">Loading...</span>
   </div>
 
-  <!-- TODO: localhost -->
   <video autoplay controls="" src="{{.MPDHTTPURL}}" style="height:40px; width:20%;"></video>
   <div>
     <span id="elapsed">Loading...</span>
@@ -42,7 +41,6 @@
     }
 
     function req() {
-      <!-- TODO: localhost -->
       fetch('{{.StatusURL}}')
         .then(response => response.json())
         .then(data => update(data));
